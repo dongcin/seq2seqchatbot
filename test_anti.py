@@ -7,27 +7,28 @@ from data_utils import batch_flow
 import json
 import os
 
+
 def test(params):
     x_data, _ = pickle.load(open('./data/chatbot.pkl', 'rb'))
     ws = pickle.load(open('./data/ws.pkl', 'rb'))
 
     for x in x_data[:5]:
         print(' '.join(x))
-    
+
     config = tf.ConfigProto(
-        device_count = {'CPU':1, 'GPU':0},
-        allow_soft_placement = True,
+        device_count={'CPU': 1, 'GPU': 0},
+        allow_soft_placement=True,
         log_device_placement=False
     )
 
     save_path = 'model/s2s_chatbot_anti.ckpt'
-    
+
     tf.reset_default_graph()
     model_pred = SequenceToSequence(
-        input_vocab_size = len(ws),
-        target_vocab_size = len(ws),
+        input_vocab_size=len(ws),
+        target_vocab_size=len(ws),
         batch_size=1,
-        mode = 'decode',
+        mode='decode',
         **params
     )
     init = tf.global_variables_initializer()
@@ -56,10 +57,12 @@ def test(params):
             for p in pred:
                 ans = ws.inverse_transform(p)
                 print(ans)
-            
+
+
 def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = '2'
     test(json.load(open('params.json')))
+
 
 if __name__ == '__main__':
     main()
